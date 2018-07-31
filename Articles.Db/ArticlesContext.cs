@@ -13,10 +13,5 @@ namespace Articles.Db
         
         public DbSet<Article> Articles { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-        }
     }
 }

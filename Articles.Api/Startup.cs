@@ -28,14 +28,15 @@ namespace Articles.Api
             RegisterTypes(services);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            ;
         }
         
         void RegisterTypes(IServiceCollection services)
         {
             var connectionString = Configuration.GetValue("ConnectionStrings:ArticlesContext", "");
-            services.AddEntityFrameworkNpgsql().AddDbContext<ArticlesContext>(options => 
+            services.AddDbContext<ArticlesContext>(options => 
                 options.UseNpgsql(connectionString));
+            
+            services.AddScoped<ArticlesRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

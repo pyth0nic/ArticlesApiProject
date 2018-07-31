@@ -1,5 +1,11 @@
+using System;
+using System.Threading.Tasks;
 using Articles.Db;
+using Articles.Db.Models;
+using Articles.Db.Models.ApiModels;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Articles.Api.Controllers
 {
@@ -7,17 +13,39 @@ namespace Articles.Api.Controllers
     [ApiController]
     public class ArticlesController : ControllerBase
     {
-        private readonly ArticlesContext _articlesContext;
+        private readonly ArticlesRepository _articlesRepository;
+        private readonly ArticlesContext _context;
 
-        public ArticlesController(ArticlesContext articlesContext)
+        public ArticlesController(ArticlesRepository articlesRepository, ArticlesContext context)
         {
-            _articlesContext = articlesContext;
+            _articlesRepository = articlesRepository;
+            _context = context;
         }
 
-        [HttpGet]
-        public ActionResult<string> HelloWorld()
+        [HttpPost]
+        public async Task<ActionResult> Articles(ArticleDto article)
         {
-            return "Hello World!";
+            if (article.Title == null || article.Body == null || article.Tags == null)
+            {
+                throw new Exception("Invalid article");
+            }
+
+            var newArticle = await _articlesRepository.AddArticle(article);
+            HttpContext.Response.Headers["Location"] = HttpContext.Request.GetDisplayUrl() + "/" + newArticle.Id;
+
+            return Ok();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Article>> GetArticleById(int id)
+        {
+            var article = await _articlesRepository.GetArticle(id);
+            if (article == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(article);
         }
     }
 }
