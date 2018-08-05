@@ -27,7 +27,7 @@ namespace Articles.Api.Controllers
         {
             if (article.Title == null || article.Body == null || article.Tags == null)
             {
-                throw new Exception("Invalid article");
+                return BadRequest("Invalid article");
             }
 
             var newArticle = await _articlesRepository.AddArticle(article);

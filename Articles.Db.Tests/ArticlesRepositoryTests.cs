@@ -57,6 +57,52 @@ namespace Articles.Db.Tests
             }
         }
 
+        [TestMethod]
+        public void GetArticle_GetsArticle_WhenExists()
+        {
+            using (var ctx = GetContext())
+            {
+                var tags = new List<Tag>()
+                {
+                    new Tag
+                    {
+                        Id = 1,
+                        Name = "Headlines"
+                    },
+                    new Tag()
+                    {
+                        Id = 2,
+                        Name = "Morning"
+                    }
+                };
+                ctx.Tags.AddRange(tags);
+                var article = new Article
+                {
+                    Id = 1,
+                    Title = "Good Morning!",
+                    Body = "Morning headlines:",
+                    Tags = tags
+                };
+                ctx.Articles.Add(article);
+                ctx.SaveChanges(true);
+                
+                var repo = new ArticlesRepository(ctx);
+                var result = repo.GetArticle(1).GetAwaiter().GetResult();
+                Assert.AreEqual(article, result);
+            }
+        }
+        
+        [TestMethod]
+        public void GetArticle_ReturnsNull_WhenArticleDoesntExist()
+        {
+            using (var ctx = GetContext())
+            {
+                var repo = new ArticlesRepository(ctx);
+                var result = repo.GetArticle(1).GetAwaiter().GetResult();
+                Assert.IsNull(result);
+            }
+        }
+
         private ArticlesContext GetContext()
         {
             var options = new DbContextOptionsBuilder<ArticlesContext>()
