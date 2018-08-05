@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Internal;
+using Newtonsoft.Json;
 
 namespace Articles.Db.Models
 {
@@ -21,6 +20,7 @@ namespace Articles.Db.Models
             set => TagList = value.Join(",");
         }
 
+        [JsonIgnore]
         [Column("Tags")]
         public string TagList { get; set; }
     }
