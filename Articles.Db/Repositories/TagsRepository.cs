@@ -7,7 +7,7 @@ using Articles.Db.Repositories.Util;
 
 namespace Articles.Db.Repositories
 {
-    public class TagsRepository
+    public class TagsRepository : ITagsRepository
     {
         private readonly ArticlesContext _articlesContext;
 

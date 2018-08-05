@@ -11,9 +11,9 @@ namespace Articles.Api.Controllers
     [ApiController]
     public class ArticlesController : ControllerBase
     {
-        private readonly ArticlesRepository _articlesRepository;
+        private readonly IArticlesRepository _articlesRepository;
 
-        public ArticlesController(ArticlesRepository articlesRepository)
+        public ArticlesController(IArticlesRepository articlesRepository)
         {
             _articlesRepository = articlesRepository;
         }
