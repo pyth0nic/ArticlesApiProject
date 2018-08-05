@@ -39,3 +39,24 @@ The related_tags field contains a list of tags that are on the articles that the
 The count field shows the number of tags for the tag for that day.
 
 The articles field contains a list of ids for the last 10 articles entered for that day.
+
+========================================================================================
+# Instructions to get this going
+  ## bash
+    -> ensure postgres is installed
+    -> run psql -f postgres-init.sql
+    -> ensure dotnet sdk 2.1.302 is installed https://www.microsoft.com/net/download
+    -> cd to Articles.Db
+        -> run dotnet restore
+        -> Apply migrations: dotnet ef database update --startup-project ../Articles.Api
+    -> cd to back to Articles.Api
+        -> run dotnet restore
+        -> run dotnet run
+
+  ## Docker (almost there, ran out of time for now)
+      -> Install docker and docker-compose
+      -> cd to articles directory
+      -> run docker-compose build
+      -> In a seperate terminal window run:
+                docker run -d --name postgres
+      -> Run docker run web

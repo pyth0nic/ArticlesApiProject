@@ -1,0 +1,37 @@
+﻿version: '2'
+
+services:
+
+  web:
+    container_name: 'aspnetcoreapp'
+    image: 'aspnetcoreapp'
+    build:
+      context: .
+      dockerfile: articles.dockerfile
+    volumes:
+      - .:/var/www/aspnetcoreapp
+    ports:
+     - "5000:5000"
+    depends_on:
+     - "postgres"
+    networks:
+      - aspnetcoreapp-network
+
+  postgres:
+    container_name: 'aspnetcore-postgres'
+    image: 'aspnetcore-postgres'
+    restart: always
+    build:
+      context: .
+      dockerfile: postgres.dockerfile
+
+    environment:
+      POSTGRES_DB: Articles
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - aspnetcoreapp-network
+
+networks:
+  aspnetcoreapp-network:
+    driver: bridge
