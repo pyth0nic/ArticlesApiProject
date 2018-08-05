@@ -43,7 +43,8 @@ namespace Articles.Db.Repositories
             var tagDto = new TagsDto
             {
                 Tag = normalisedTag,
-                Articles = articles.Select(x => x.Id).ToArray(),
+                // take a maximum of 10 articles
+                Articles = articles.Select(x => x.Id).Take(10).ToArray(),
                 // Get total related tags for the day
                 Count = articles.SelectMany(x=> x.Tags).Count(),
                 RelatedTags = relatedTags.ToArray()
