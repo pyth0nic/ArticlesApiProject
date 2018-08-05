@@ -1,28 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Articles.Db.Models;
 using Articles.Db.Models.ApiModels;
-using Microsoft.EntityFrameworkCore;
+using Articles.Db.Repositories;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Articles.Db.Tests
 {
     [TestClass]
     public class ArticlesRepositoryTests
-    {
-        [TestMethod]
-        public void Works()
-        {
-            Assert.IsFalse(false);
-            Assert.AreEqual(1,1);
-        }
-        
+    {        
         [TestMethod]
         public void AddArticle_AddsArticle_WhenValidData()
         {
-            using (var ctx = GetContext())
+            using (var ctx = ContextUtil.GetContext())
             {
                 var repo = new ArticlesRepository(ctx);
                 
@@ -30,28 +22,26 @@ namespace Articles.Db.Tests
                 {
                     Title = "The empire actually strikes back!?",
                     Body = "[Insert something funny here]",
-                    Tags = new string[] { "star wars", "light side", "dark side" }
+                    Tags = new string[] { "star wars", "light side", "dark side", "dark side" }
                 };
                 
                 var result = repo.AddArticle(article).GetAwaiter().GetResult();
                 
-                Assert.AreEqual(1, result.Id);
                 Assert.AreEqual("The empire actually strikes back!?", result.Title);
                 Assert.AreEqual("[Insert something funny here]", result.Body);
 
-                new List<Tag>()
+                new List<string>()
                 {
-                    new Tag {Id = 1, Name = "Star Wars"},
-                    new Tag {Id = 2, Name = "Light Side"},
-                    new Tag {Id = 3, Name = "Dark Side"}
+                    "Star Wars",
+                    "Light Side",
+                    "Dark Side"
                 }.Select(x=>
                 {
-                    var tag = result.Tags.First(y => x.Id == y.Id);
-                    Assert.AreEqual(x.Id, tag.Id);
-                    Assert.AreEqual(x.Id, tag.Name);
+                    var tag = result.Tags.First(y => x == y);
+                    Assert.AreEqual(x, tag);
                     return tag;
                 });
-                
+
                 // Give it two minutes
                 Assert.IsTrue(result.Date > DateTime.UtcNow.AddMinutes(-1) && result.Date < DateTime.UtcNow.AddMinutes(1));
             }
@@ -60,28 +50,19 @@ namespace Articles.Db.Tests
         [TestMethod]
         public void GetArticle_GetsArticle_WhenExists()
         {
-            using (var ctx = GetContext())
+            using (var ctx = ContextUtil.GetContext())
             {
-                var tags = new List<Tag>()
+                var tags = new List<string>()
                 {
-                    new Tag
-                    {
-                        Id = 1,
-                        Name = "Headlines"
-                    },
-                    new Tag()
-                    {
-                        Id = 2,
-                        Name = "Morning"
-                    }
+                    "Headlines",
+                    "Morning"
                 };
-                ctx.Tags.AddRange(tags);
                 var article = new Article
                 {
                     Id = 1,
                     Title = "Good Morning!",
                     Body = "Morning headlines:",
-                    Tags = tags
+                    Tags = tags.ToArray()
                 };
                 ctx.Articles.Add(article);
                 ctx.SaveChanges(true);
@@ -95,20 +76,12 @@ namespace Articles.Db.Tests
         [TestMethod]
         public void GetArticle_ReturnsNull_WhenArticleDoesntExist()
         {
-            using (var ctx = GetContext())
+            using (var ctx = ContextUtil.GetContext())
             {
                 var repo = new ArticlesRepository(ctx);
                 var result = repo.GetArticle(1).GetAwaiter().GetResult();
                 Assert.IsNull(result);
             }
-        }
-
-        private ArticlesContext GetContext()
-        {
-            var options = new DbContextOptionsBuilder<ArticlesContext>()
-                .UseInMemoryDatabase(databaseName: "db")
-                .Options;
-            return new ArticlesContext(options);
         }
     }
 }

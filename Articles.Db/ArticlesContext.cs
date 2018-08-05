@@ -1,5 +1,6 @@
 ﻿using Articles.Db.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Articles.Db
 {
@@ -10,8 +11,11 @@ namespace Articles.Db
         {
             
         }
-        
-        public DbSet<Article> Articles { get; set; }
-        public DbSet<Tag> Tags { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+        }
+
+        public Microsoft.EntityFrameworkCore.DbSet<Article> Articles { get; set; }
     }
 }

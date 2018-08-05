@@ -28,34 +28,14 @@ namespace Articles.Db.Migrations
 
                     b.Property<DateTime>("Date");
 
+                    b.Property<string>("TagList")
+                        .HasColumnName("Tags");
+
                     b.Property<string>("Title");
 
                     b.HasKey("Id");
 
                     b.ToTable("Articles");
-                });
-
-            modelBuilder.Entity("Articles.Db.Models.Tag", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<long?>("ArticleId");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ArticleId");
-
-                    b.ToTable("Tags");
-                });
-
-            modelBuilder.Entity("Articles.Db.Models.Tag", b =>
-                {
-                    b.HasOne("Articles.Db.Models.Article")
-                        .WithMany("Tags")
-                        .HasForeignKey("ArticleId");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,5 +1,6 @@
 using System.IO;
 using Articles.Db;
+using Articles.Db.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +38,7 @@ namespace Articles.Api
                 options.UseNpgsql(connectionString));
             
             services.AddScoped<ArticlesRepository>();
+            services.AddScoped<TagsRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

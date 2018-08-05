@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Articles.Db.Models;
 using Articles.Db.Models.ApiModels;
+using Articles.Db.Repositories.Util;
 using Microsoft.EntityFrameworkCore;
 
-namespace Articles.Db
+namespace Articles.Db.Repositories
 {
-    public class ArticlesRepository
+    public class ArticlesRepository : IArticlesRepository
     {
         private readonly ArticlesContext _context;
 
@@ -25,8 +26,9 @@ namespace Articles.Db
                 Title = articleDto.Title,
                 Body = articleDto.Body,
                 Date = DateTime.UtcNow,
-                Tags = tags
+                Tags = tags.ToArray()
             });
+            
             await _context.SaveChangesAsync(true);
             return newArticle.Entity;
         }
@@ -36,40 +38,30 @@ namespace Articles.Db
             return await _context.Articles.FirstOrDefaultAsync(x => x.Id == id);;
         }
 
-        private async Task<List<Tag>> UpsertTags(IEnumerable<string> tags)
+        private async Task<List<string>> UpsertTags(IEnumerable<string> tags)
         {
-            var tagList = new List<Tag>();
+            var tagList = new List<string>();
             foreach (var tag in tags)
             {
-                tagList.Add(await UpsertTag(tag,false));
+                var tagEntity = await UpsertTag(tag, tagList);
+                if (tagEntity == null)
+                    continue;
+
+                tagList.Add(tagEntity);
             }
 
             return tagList;
         }
         
         // No update at this point
-        private async Task<Tag> UpsertTag(string tag, bool saveNow=true)
+        private async Task<string> UpsertTag(string tag, List<string> tagList)
         {
-            var existingTag = await _context.Tags.FirstOrDefaultAsync(x => x.Name == NormaliseTag(tag));
-
-            if (existingTag != null)
+            if (tagList.Any(x => x == TagNormaliser.Normalise(tag)))
             {
-                return existingTag;
+                return null;
             }
             
-            var newTag = (await _context.Tags.AddAsync(new Tag {Name = NormaliseTag(tag)})).Entity;
-            
-            if (saveNow) 
-                await _context.SaveChangesAsync(true);
-            return newTag;
+            return TagNormaliser.Normalise(tag);
         }
-
-        // todo move to utils
-        private string NormaliseTag(string tag)
-        {
-            TextInfo textInfo = new CultureInfo("en-AU",false).TextInfo;
-            return textInfo.ToTitleCase(tag);
-        }
-        
     }
 }

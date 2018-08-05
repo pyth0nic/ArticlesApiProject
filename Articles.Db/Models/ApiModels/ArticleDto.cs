@@ -18,7 +18,7 @@ namespace Articles.Db.Models.ApiModels
                 Title = article.Title,
                 Body = article.Body,
                 Date = article.Date.ToString("yyyy-mm-dd"),
-                Tags = article.Tags.Select(x => x.Name)
+                Tags = article.Tags
             };
         }
     }

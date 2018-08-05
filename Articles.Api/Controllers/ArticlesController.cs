@@ -1,11 +1,9 @@
-using System;
 using System.Threading.Tasks;
-using Articles.Db;
 using Articles.Db.Models;
 using Articles.Db.Models.ApiModels;
+using Articles.Db.Repositories;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Articles.Api.Controllers
 {
@@ -14,12 +12,10 @@ namespace Articles.Api.Controllers
     public class ArticlesController : ControllerBase
     {
         private readonly ArticlesRepository _articlesRepository;
-        private readonly ArticlesContext _context;
 
-        public ArticlesController(ArticlesRepository articlesRepository, ArticlesContext context)
+        public ArticlesController(ArticlesRepository articlesRepository)
         {
             _articlesRepository = articlesRepository;
-            _context = context;
         }
 
         [HttpPost]
